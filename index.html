@@ -17,12 +17,17 @@
     charset="utf-8">
 
 <body>
-    <input type="file" id="file"/>
+    <input type="file" id="file" multiple="multiple" />
     <div id="demo"></div>
+
+    <table id='table' style="">
+        
+    </table>
+
 </body>
 
 <script type="text/javascript">
-    $(document).ready(function(){
+    $(document).ready(function () {
 
         /*
         FileReader共有4种读取方法：
@@ -39,40 +44,54 @@
             var o = "",
                 l = 0,
                 w = 10240;
-            for(; l < data.byteLength / w; ++l) o += String.fromCharCode.apply(null, new Uint8Array(data.slice(l * w, l * w + w)));
+            for (; l < data.byteLength / w; ++l) o += String.fromCharCode.apply(null, new Uint8Array(data.slice(l * w, l * w + w)));
             o += String.fromCharCode.apply(null, new Uint8Array(data.slice(l * w)));
             return o;
         }
 
+        function makeTableHtml(info) {
+            // $("#table").append();
+            let array = [];
+            info.map((item, index) => {
+                let com = '<tr>';
+                for (const key in item) {
+                    if (item.hasOwnProperty(key)) {
+                        const element = item[key];
+                        let sty = `style="border-color: blue; width: 240px; border-width: 0.5px; margin-left: 10px; margin-right: 10px;"`
+                        let tag1 = index == 0 ? `<th ${sty}>` : `<td ${sty}>`;
+                        let tag2 = index == 0 ? `</th>` : '</td>';
+                        if (!element || element == '') {element = '/'}
+                        console.log();
+                        com = com + `${tag1}${element}${tag2}`;
+                    }
+                }
+                com = com + '</tr>';
+                array.push(com);
+            });
+            $("#table").append(array);
+        }
 
-        $("#file").change(function(){
-            if(!this.files) {
-                return;
-            }
+        $("#file").change(function () {
+            if (!this.files) { return; }
             var f = this.files[0];
-            console.log('fff = ',f);
             var reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = function (e) {
                 var data = e.target.result;
-                if(rABS) {
-                    wb = XLSX.read(btoa(fixdata(data)),{
+                if (rABS) {
+                    wb = XLSX.read(btoa(fixdata(data)), {
                         type: 'base64'
                     });
                 } else {
-                    wb = XLSX.read(data,{
+                    wb = XLSX.read(data, {
                         type: 'binary'
                     });
                 }
 
-                let obj = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]) ;
+                let info = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
 
-                obj.map((item) => {
-                    // console.log(item);
-                    console.log('keys= ',item.__EMPTY_6);
-                });
-                // document.getElementById("demo").innerHTML= JSON.stringify( obj );
+                makeTableHtml(info);
             };
-            if(rABS) {
+            if (rABS) {
                 reader.readAsArrayBuffer(f);
             } else {
                 reader.readAsBinaryString(f);

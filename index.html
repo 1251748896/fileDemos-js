@@ -20,7 +20,7 @@
     <input type="file" id="file" multiple="multiple" />
     <div id="demo"></div>
 
-    <table id='table' style="">
+    <table id='table'>
         
     </table>
 
@@ -70,8 +70,9 @@
             });
             $("#table").append(array);
         }
-
-        $("#file").change(function () {
+        let input = document.getElementById("file");
+        console.log('input = ',input);
+        input.change(function () {
             if (!this.files) { return; }
             var f = this.files[0];
             var reader = new FileReader();

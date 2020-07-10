@@ -72,7 +72,7 @@
         }
         let input = document.getElementById("file");
         console.log('input = ',input);
-        input.change(function () {
+        $("#file").change(function () {
             if (!this.files) { return; }
             var f = this.files[0];
             var reader = new FileReader();
